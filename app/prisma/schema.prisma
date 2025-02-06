@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int                        @id @default(autoincrement())
+  user_id              Int?
+  username             String
+  email                String                    
+  password             String                    
+  avatar               String?
+  status               Status                     @default(ACTIVE)
+  datetime             DateTime                   @default(now())
+  sessions             Session[]
+
+  @@index([user_id], map: "user_user_id_fkey")
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "sessions_userId_fkey")
+  @@map("user_sessions")
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
