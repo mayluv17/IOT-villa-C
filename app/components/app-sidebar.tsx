@@ -58,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           versions={data.versions}
           defaultVersion={data.versions[0]}
         /> */}
-        <h5>Villa</h5>
+        <h5 className="text-4xl bold pl-4">VILL</h5>
         <SearchForm />
       </SidebarHeader>
       <SidebarContent>
