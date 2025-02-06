@@ -97,7 +97,7 @@ export function RadialChart() {
         <div className="leading-none text-muted-foreground">
           Showing amount of wood in store
         </div>
-        <div className="rounded-full p-1 px-2 bg-yellow-200 text-yellow-950 flex items-center">
+        <div className="rounded-full p-1 px-4 bg-yellow-200 text-yellow-950 flex items-center">
           Prepare to fill up <TrendingUp className="h-4 w-4 ml-2" />
         </div>
       </CardFooter>
