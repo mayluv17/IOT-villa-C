@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Suspense, useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { toast } from "react-toastify";
-import { userAuth } from "@/lib/actions/auth.actions";
-import { useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { Suspense, useEffect, useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { toast } from 'react-toastify';
+import { userAuth } from '@/lib/actions/auth.actions';
+import { useSearchParams } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 interface StateType {
   status: string;
@@ -25,29 +25,29 @@ export default function Login() {
 }
 
 const STATUS = {
-  IDLE: "idle",
-  PENDING: "pending",
-  SUCCESS: "success",
-  ERROR: "error",
+  IDLE: 'idle',
+  PENDING: 'pending',
+  SUCCESS: 'success',
+  ERROR: 'error',
 };
 
 function Form() {
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirectPath") || "/admin/dashboard";
+  const redirectPath = searchParams.get('redirectPath') || '/admin/dashboard';
 
   const [state, setState] = useState<StateType>({
     status: STATUS.IDLE,
   });
 
   useEffect(() => {
-    document.title = "Login";
+    document.title = 'Login';
   });
 
   const doSubmit = async (formData: FormData) => {
     setState((prev) => ({
       ...prev,
       status: STATUS.IDLE,
-      message: "",
+      message: '',
     }));
 
     const res = await userAuth(formData, redirectPath);
@@ -67,7 +67,7 @@ function Form() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-[80%] lg:w-[400px] mx-auto shadow-md rounded-md p-6">
+      <div className="w-[80%] lg:w-[400px] mx-auto shadow-md rounded p-6">
         <form action={doSubmit} className="grid gap-3">
           <div className="mb-3">
             <Label>Username</Label>

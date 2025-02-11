@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { validateSession } from "./session";
-import { getPathname } from "./misc";
+import { redirect } from 'next/navigation';
+import { validateSession } from './session';
+import { getPathname } from './misc';
 
 export function authWrapper<Ctx extends any[], CReturn>(
   func: (user: UserAttributes, ...ctx: Ctx) => Promise<CReturn>

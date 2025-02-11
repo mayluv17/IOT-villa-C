@@ -17,6 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/toaster';
 
 export default async function Layout({
   children,
@@ -67,6 +68,7 @@ export default async function Layout({
           <div className="">{children}</div>
         </div>
       </SidebarInset>
+      <Toaster />
     </SidebarProvider>
   );
 }

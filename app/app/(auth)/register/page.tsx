@@ -68,7 +68,7 @@ function Form() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-[80%] lg:w-[400px] mx-auto shadow-md rounded-md p-6">
+      <div className="w-[80%] lg:w-[400px] mx-auto shadow-md rounded p-6">
         <form action={doSubmit} className="grid gap-3">
           <div className="mb-3">
             <Label>Username</Label>

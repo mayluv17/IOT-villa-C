@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { POST } from '@/app/api/get-session/route';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export type AuthContextType = {
   user: UserAttributes | null;
@@ -16,7 +17,9 @@ export default function AuthProvider({
   useEffect(() => {
     async function getUser() {
       try {
-        const data = await fetch("/api/get-session");
+        const data = await fetch('/api/get-session', {
+          method: 'POST',
+        });
         const res = await data.json();
         setUser(res);
       } catch (error) {
@@ -34,7 +37,7 @@ export function useAuth() {
   const context = useContext(AuthContext);
 
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
 
   return context;
