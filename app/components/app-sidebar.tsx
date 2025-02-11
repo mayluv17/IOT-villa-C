@@ -32,7 +32,7 @@ const data = {
         },
         {
           title: 'Access code',
-          url: '#',
+          url: '/admin/dashboard/access',
           icon: ScanQrCode,
         },
         {
