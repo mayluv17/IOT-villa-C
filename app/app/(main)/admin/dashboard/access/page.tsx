@@ -115,17 +115,18 @@ export default function AccessPage() {
     <div className="container mx-auto p-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8">
-          <div className="flex items-center gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="flex-1">
+                <FormItem className="flex flex-col space-y-2">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
                       placeholder="email@example.com"
+                      className="w-full"
                       {...field}
                     />
                   </FormControl>
@@ -138,15 +139,15 @@ export default function AccessPage() {
               control={form.control}
               name="validity"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date of birth</FormLabel>
+                <FormItem className="flex flex-col space-y-2">
+                  <FormLabel>Validity</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant={'outline'}
                           className={cn(
-                            'w-[240px] pl-3 text-left font-normal',
+                            'w-full pl-3 text-left font-normal',
                             !field.value && 'text-muted-foreground'
                           )}>
                           {field.value ? (
@@ -163,9 +164,6 @@ export default function AccessPage() {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        // disabled={(date) =>
-                        //   date > new Date() || date < new Date('1900-01-01')
-                        // }
                         initialFocus
                       />
                     </PopoverContent>
@@ -175,7 +173,9 @@ export default function AccessPage() {
               )}
             />
 
-            <Button type="submit">Generate</Button>
+            <Button type="submit" className="w-full self-end">
+              Generate
+            </Button>
           </div>
         </form>
       </Form>

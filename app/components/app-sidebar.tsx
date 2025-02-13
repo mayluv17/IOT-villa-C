@@ -36,7 +36,7 @@ const data = {
         },
         {
           title: 'Request',
-          url: '#',
+          url: '/admin/dashboard/requests',
           icon: Headset,
         },
         {

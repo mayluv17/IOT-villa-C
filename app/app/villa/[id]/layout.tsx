@@ -10,5 +10,7 @@ export default async function Layout({
   //     redirect('/login');
   //   }
 
-  return <div className="container mx-auto p-10">{children}</div>;
+  return (
+    <div className="container mx-auto p-10 justify-center">{children}</div>
+  );
 }
