@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Input as DTSInput } from '@explita/daily-toolset/components';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -115,7 +115,7 @@ export default function AccessPage() {
     <div className="container mx-auto p-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="mb-8">
-          <div className="flex items-end gap-4">
+          <div className="flex items-center gap-4">
             <FormField
               control={form.control}
               name="email"
@@ -138,15 +138,15 @@ export default function AccessPage() {
               control={form.control}
               name="validity"
               render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Validity Until</FormLabel>
+                <FormItem className="flex flex-col">
+                  <FormLabel>Date of birth</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant={'outline'}
                           className={cn(
-                            'w-full pl-3 text-left font-normal',
+                            'w-[240px] pl-3 text-left font-normal',
                             !field.value && 'text-muted-foreground'
                           )}>
                           {field.value ? (
@@ -163,9 +163,9 @@ export default function AccessPage() {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
+                        // disabled={(date) =>
+                        //   date > new Date() || date < new Date('1900-01-01')
+                        // }
                         initialFocus
                       />
                     </PopoverContent>

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { CircleAlert, DropletOff, Droplets } from 'lucide-react';
+import { CircleAlert, Droplets } from 'lucide-react';
 export function WaterLeakage() {
   return (
     <Card>
@@ -16,6 +16,7 @@ export function WaterLeakage() {
         <CardDescription>The floor is wet</CardDescription>
       </CardHeader>
       <CardContent>
+        {/* {( */}
         <Droplets
           color="#e11d47"
           className="w-56 h-56 place-self-center"

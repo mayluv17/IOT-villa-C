@@ -6,7 +6,6 @@ import {
   CardDescription,
   CardHeader,
   CardContent,
-  CardFooter,
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Lock, LockOpen } from 'lucide-react';
