@@ -5,7 +5,7 @@ import { handleError } from '../utils';
 import { formValidation } from '@explita/daily-toolset/validation';
 import { loginSchema, registerSchema } from '@/validation/auth.schemas';
 import db from '@/lib/db';
-import { Argon2id } from 'oslo/password';
+import bcrypt from 'bcrypt';
 
 export async function userAuth(formData: FormData, redirectPath?: string) {
   const result = await formValidation(loginSchema, formData);
@@ -36,9 +36,9 @@ export async function userAuth(formData: FormData, redirectPath?: string) {
       };
     }
 
-    const isPasswordValid = await new Argon2id().verify(
-      user.password,
-      result.formData.password
+    const isPasswordValid = await bcrypt.compare(
+      result.formData.password,
+      user.password
     );
 
     if (!isPasswordValid) {
@@ -66,7 +66,7 @@ export async function registerUser(formData: FormData) {
       return { error: true, ...result.errorData };
     }
 
-    const hashedPassword = await new Argon2id().hash(result.formData.password);
+    const hashedPassword = await bcrypt.hash(result.formData.password, 10);
 
     const user = await db.user.create({
       data: {
