@@ -1,17 +1,20 @@
-import { POST } from '@/app/api/get-session/route';
-import { createContext, useContext, useEffect, useState } from 'react';
+'use client';
+
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+} from 'react';
 
 export type AuthContextType = {
   user: UserAttributes | null;
 };
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export default function AuthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserAttributes | null>(null);
 
   useEffect(() => {
@@ -35,10 +38,10 @@ export default function AuthProvider({
 
 export function useAuth() {
   const context = useContext(AuthContext);
-
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-
   return context;
 }
+
+export default AuthProvider;

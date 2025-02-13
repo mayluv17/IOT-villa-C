@@ -22,19 +22,19 @@ function Occupancy() {
         <div className="grid grid-cols-2 m-4 gap-4">
           <div>
             <h4>Cottage 1</h4>
-            <div className="w-40 bg-rose-500 border border-rose-600 h-20 rounded"></div>
+            <div className="max-w-40 bg-rose-500 border border-rose-600 h-20 rounded"></div>
           </div>
           <div>
             <h4>Cottage 2</h4>
-            <div className="w-40 bg-rose-500 border border-rose-600 h-20 rounded"></div>
+            <div className="max-w-40 bg-rose-500 border border-rose-600 h-20 rounded"></div>
           </div>
           <div>
             <h4>Cottage 3</h4>
-            <div className="w-40 bg-rose-500 border border-rose-600 h-20 rounded"></div>
+            <div className="max-w-40 bg-rose-500 border border-rose-600 h-20 rounded"></div>
           </div>
           <div>
             <h4>Cottage 4</h4>
-            <div className="w-40 bg-gray-200 h-20 rounded"></div>
+            <div className="max-w-40 bg-gray-200 h-20 rounded"></div>
           </div>
         </div>
       </CardContent>

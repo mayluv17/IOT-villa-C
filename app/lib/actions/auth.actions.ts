@@ -2,7 +2,6 @@
 
 import { sessionRegister } from '@/auth/session';
 import { handleError } from '../utils';
-import * as argon2 from 'argon2';
 import { formValidation } from '@explita/daily-toolset/validation';
 import { loginSchema, registerSchema } from '@/validation/auth.schemas';
 import db from '@/lib/db';

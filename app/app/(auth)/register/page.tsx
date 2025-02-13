@@ -1,8 +1,6 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { registerUser } from '@/lib/actions/auth.actions';
 import { useSearchParams } from 'next/navigation';
