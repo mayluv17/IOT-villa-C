@@ -2,13 +2,18 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
 // Update customer
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
     const { email, expiresAt } = await request.json();
-    const { id } = params;
+    const { id } = await context.params;  // ✅ Fix: Await params properly
+    const numericId = parseInt(id, 10);  // Ensure it's a number
+
+    if (isNaN(numericId)) {
+        return NextResponse.json({ error: "Invalid customer ID" }, { status: 400 });
+    }
 
     try {
         const updatedCustomer = await prisma.access.update({
-            where: { id: parseInt(id) },
+            where: { id: numericId },
             data: { email, expiresAt: new Date(expiresAt) }
         });
 
@@ -19,11 +24,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 // Delete customer
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    const { id } = params;
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+    const { id } = await context.params; // ✅ Fix: Await params properly
+    const numericId = parseInt(id, 10);
+
+    if (isNaN(numericId)) {
+        return NextResponse.json({ error: "Invalid customer ID" }, { status: 400 });
+    }
 
     try {
-        await prisma.access.delete({ where: { id: parseInt(id) } });
+        await prisma.access.delete({ where: { id: numericId } });
         return NextResponse.json({ message: "Customer access deleted" });
     } catch (error) {
         return NextResponse.json({ error: "Failed to delete customer" }, { status: 500 });
