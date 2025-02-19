@@ -11,14 +11,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Input as DTSInput } from '@explita/daily-toolset/components';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchAccess, generateAccess } from '@/lib/services/access.service';
+import { Separator } from '@/components/ui/separator';
 import {
   Popover,
   PopoverContent,
@@ -27,70 +27,40 @@ import {
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
-import { Separator } from '@/components/ui/separator';
-
-async function getData(): Promise<Access[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: '728ed52f',
-      code: 'XHDG63',
-      validity: '12 FEB 2025',
-      email: 'm@example.com',
-    },
-    {
-      id: '728ed52f',
-      code: 'XHDG63',
-      validity: '12 FEB 2025',
-      email: 'm@example.com',
-    },
-    {
-      id: '728ed52f',
-      code: 'XHDG63',
-      validity: '12 FEB 2025',
-      email: 'm@example.com',
-    },
-    {
-      id: '728ed52f',
-      code: 'XHDG63',
-      validity: '12 FEB 2025',
-      email: 'm@example.com',
-    },
-    {
-      id: '728ed52f',
-      code: 'XHDG63',
-      validity: '12 FEB 2025',
-      email: 'm@example.com',
-    },
-    {
-      id: '728ed52f',
-      code: 'XHDG63',
-      validity: '12 FEB 2025',
-      email: 'm@example.com',
-    },
-    // ...
-  ];
-}
 
 export default function AccessPage() {
   const { toast } = useToast();
-  const [data, setData] = useState<Access[]>([]);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await getData();
-      setData(result);
-    };
-    fetchData();
-  }, []);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['access'],
+    queryFn: fetchAccess,
+  });
+
+  const mutation = useMutation({
+    mutationFn: generateAccess,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['access'] });
+      toast({
+        variant: 'default',
+        title: 'Access Code Generated',
+      });
+      form.reset();
+    },
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to generate access code',
+      });
+    },
+  });
 
   const formSchema = z.object({
     email: z.string().email(),
     validity: z.date(),
-    // email: z.string().min(2, {
-    //   message: 'Username must be at least 2 characters.',
-    // }),
   });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -99,16 +69,16 @@ export default function AccessPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({
-      variant: 'default',
-      title: 'Access Code Generated',
-      description: (
-        <pre className="mt-2 w-[340px] rounded bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      ),
-    });
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    mutation.mutate(values);
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading access data</div>;
   }
 
   return (
@@ -180,7 +150,7 @@ export default function AccessPage() {
         </form>
       </Form>
       <Separator />
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data || []} />
     </div>
   );
 }

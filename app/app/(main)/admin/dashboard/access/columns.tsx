@@ -14,13 +14,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
+import { format } from 'date-fns';
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Access = {
   id: string;
-  code: string;
-  validity: string;
+  pinCode: string;
+  expiresAt: string;
   email: string;
 };
 
@@ -48,9 +47,11 @@ export const columns: ColumnDef<Access>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'code',
+    accessorKey: 'pinCode',
     header: 'Code',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('code')}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('pinCode')}</div>
+    ),
   },
   {
     accessorKey: 'email',
@@ -67,12 +68,14 @@ export const columns: ColumnDef<Access>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
   },
   {
-    accessorKey: 'validity',
+    accessorKey: 'expiresAt',
     header: () => <div className="text-right">Validity</div>,
     cell: ({ row }) => {
       // const validity = row.getValue('validity');
       return (
-        <div className="text-right font-medium">{row.getValue('validity')}</div>
+        <div className="text-right font-medium">
+          {format(new Date(row.getValue('expiresAt')), 'PPp')}
+        </div>
       );
     },
   },
@@ -80,7 +83,7 @@ export const columns: ColumnDef<Access>[] = [
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
+      const access = row.original;
 
       return (
         <DropdownMenu>
@@ -93,12 +96,10 @@ export const columns: ColumnDef<Access>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}>
-              Copy payment ID
+              onClick={() => navigator.clipboard.writeText(access.pinCode)}>
+              Copy Access code
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Delete Access</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

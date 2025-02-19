@@ -6,6 +6,7 @@ import './globals.css';
 import AuthProvider from '@/contexts/auth-context';
 import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster';
+import Providers from './providers';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -34,11 +35,13 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {excluded.includes(pathName) ? (
-          children
-        ) : (
-          <AuthProvider>{children}</AuthProvider>
-        )}
+        <Providers>
+          {excluded.includes(pathName) ? (
+            children
+          ) : (
+            <AuthProvider>{children}</AuthProvider>
+          )}
+        </Providers>
         <Toaster />
       </body>
     </html>
