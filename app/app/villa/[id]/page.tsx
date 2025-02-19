@@ -33,6 +33,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
+import SignIn from './signin';
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
@@ -63,16 +64,15 @@ export default function Home() {
     toast({
       variant: 'default',
       title: 'Enquiry Submitted',
-      description: (
-        <div className="mt-2 rounded bg-slate-950 p-4">
-          <p className="text-white mb-2">Category: {values.category}</p>
-          <p className="text-white">Message: {values.message}</p>
-        </div>
-      ),
     });
     form.reset();
   }
 
+  const isLoggedIn = false;
+
+  if (!isLoggedIn) {
+    return <SignIn />;
+  }
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="flex flex-col gap-4 items-center max-w-screen-sm w-full">
