@@ -1,8 +1,10 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
-import { ArrowUpDown } from 'lucide-react';
+import { MoreHorizontal, ArrowUpDown } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteAccess } from '@/lib/services/access.service';
+import { useToast } from '@/hooks/use-toast';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +17,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 export type Access = {
   id: string;
@@ -22,6 +26,35 @@ export type Access = {
   expiresAt: string;
   email: string;
 };
+
+function DeleteAction({ access }: { access: Access }) {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const mutation = useMutation({
+    mutationFn: deleteAccess,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['access'] });
+      toast({
+        title: 'Access Deleted',
+        description: 'The access has been successfully deleted',
+      });
+    },
+    onError: () => {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to delete access',
+      });
+    },
+  });
+
+  return (
+    <DropdownMenuItem onClick={() => mutation.mutate(access.id)}>
+      Delete Access
+    </DropdownMenuItem>
+  );
+}
 
 export const columns: ColumnDef<Access>[] = [
   {
@@ -90,7 +123,7 @@ export const columns: ColumnDef<Access>[] = [
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -99,7 +132,7 @@ export const columns: ColumnDef<Access>[] = [
               onClick={() => navigator.clipboard.writeText(access.pinCode)}>
               Copy Access code
             </DropdownMenuItem>
-            <DropdownMenuItem>Delete Access</DropdownMenuItem>
+            <DeleteAction access={access} />
           </DropdownMenuContent>
         </DropdownMenu>
       );
