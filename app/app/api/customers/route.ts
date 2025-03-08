@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     // Send PIN code via email logic goes here later
 
-    return NextResponse.json({
+    return NextResponse.json({  
       message: 'PIN generated and email sent',
       pinCode: newCustomer.pinCode,
     });
@@ -43,3 +43,4 @@ export async function GET() {
     );
   }
 }
+// New function to verify access code
