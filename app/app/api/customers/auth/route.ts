@@ -3,8 +3,7 @@ import prisma from '@/lib/db';
 
 export async function POST(request: Request) {
   const { pinCode } = await request.json();
-  console.log("Received pinCode:", pinCode); // Log received pinCode
-
+ 
   if (!pinCode) {
     return NextResponse.json(
       { error: 'Access code is required' },
@@ -25,8 +24,6 @@ export async function POST(request: Request) {
         },
       },
     });
-
-    console.log("Database result:", validAccess); // Log the result from the database
 
     if (validAccess) {
       // If pinCode is found and valid, set a cookie with the pinCode
