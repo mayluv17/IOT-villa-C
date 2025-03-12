@@ -43,6 +43,21 @@ model Access {
   @@map("clients")
 }
 
+model SensorData {
+  id          Int      @id @default(autoincrement())
+  moisture    Int
+  temperature Float
+  distance    Float
+  motion      Boolean  @default(false) // New field
+  createdAt   DateTime @default(now())
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+
 model GuestRequest {
   id        Int      @id @default(autoincrement())
   category  String
@@ -51,20 +66,7 @@ model GuestRequest {
 }
 
 model LockBox {
-  id     Int     @id @default(1)
+  id     Int     @id @default(1)  
   status Boolean @default(false)
 }
 
-// Add SensorData model here:
-model SensorData {
-  id          Int      @id @default(autoincrement())
-  moisture    Int
-  temperature Float
-  distance    Float
-  createdAt   DateTime @default(now())
-}
-
-enum Status {
-  ACTIVE
-  INACTIVE
-}
