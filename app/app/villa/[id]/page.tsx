@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  Card,
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardTitle, CardDescription, CardHeader, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { CarFront, Lock, LockOpen, Send } from 'lucide-react';
 import { useState } from 'react';
@@ -14,21 +8,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -61,10 +42,7 @@ export default function Home() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({
-      variant: 'default',
-      title: 'Enquiry Submitted',
-    });
+    toast({ variant: 'default', title: 'Enquiry Submitted' });
     form.reset();
   }
 
@@ -79,9 +57,7 @@ export default function Home() {
         <Card className="flex flex-col gap-4 items-center max-w-screen-sm w-full">
           <CardHeader className="text-center">
             <CardTitle>Welcome to villa {params.id} occupant</CardTitle>
-            <CardDescription>
-              Grab your villa key and start enjoying your stay.
-            </CardDescription>
+            <CardDescription>Grab your villa key and start enjoying your stay.</CardDescription>
           </CardHeader>
           <CardContent>
             <button
@@ -90,11 +66,7 @@ export default function Home() {
                 !isOpen ? 'border-green-400' : 'border-red-400'
               )}
               onClick={toggleBox}>
-              {isOpen ? (
-                <Lock className="text-red-400" />
-              ) : (
-                <LockOpen className="text-green-400" />
-              )}
+              {isOpen ? <Lock className="text-red-400" /> : <LockOpen className="text-green-400" />}
               {isOpen ? 'Close Box' : 'Open Box'}
             </button>
           </CardContent>
@@ -110,18 +82,14 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
                     name="category"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a category" />
@@ -146,11 +114,7 @@ export default function Home() {
                       <FormItem>
                         <FormLabel>Message</FormLabel>
                         <FormControl>
-                          <Textarea
-                            placeholder="Type your message here."
-                            className="resize-none"
-                            {...field}
-                          />
+                          <Textarea placeholder="Type your message here." className="resize-none" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
