@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import  prisma  from "@/lib/db"; // Adjust the path if needed
-
+import  prisma  from "@/lib/db"; 
 // GET request - Retrieve lock-box status
 export async function GET() {
   try {
