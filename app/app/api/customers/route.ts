@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/db'; // Ensure you have prisma client setup
+import prisma from '@/lib/db'; 
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Function to generate a random 6-character PIN
 const generatePinCode = () =>
@@ -10,6 +13,7 @@ export async function POST(request: Request) {
   const pinCode = generatePinCode();
 
   try {
+    // Save the PIN code to the database
     const newCustomer = await prisma.access.create({
       data: {
         email,
@@ -18,15 +22,22 @@ export async function POST(request: Request) {
       },
     });
 
-    // Send PIN code via email logic goes here later
+    // Send email using Resend
+    await resend.emails.send({
+      from: 'onboarding@resend.dev', // Replace later with your verified domain email
+      to: email,
+      subject: 'Your PIN Code for Access',
+      html: `<p>Your PIN code is: <strong>${pinCode}</strong></p>`,
+    });
 
     return NextResponse.json({
-      message: 'PIN generated and email sent',
+      message: 'PIN generated and email sent successfully',
       pinCode: newCustomer.pinCode,
     });
   } catch (error) {
+    console.error('Email sending error:', error);
     return NextResponse.json(
-      { error: 'Failed to add customer' },
+      { error: 'Failed to add customer or send email' },
       { status: 500 }
     );
   }

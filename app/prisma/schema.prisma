@@ -8,15 +8,15 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  user_id   Int?
-  username  String
-  email     String
-  password  String
-  avatar    String?
-  status    Status   @default(ACTIVE)
-  datetime  DateTime @default(now())
-  sessions  Session[]
+  id       Int       @id @default(autoincrement())
+  user_id  Int?
+  username String
+  password String
+  avatar   String?
+  status   Status    @default(ACTIVE)
+  datetime DateTime  @default(now())
+  email    String
+  sessions Session[]
 
   @@index([user_id], map: "user_user_id_fkey")
   @@map("users")
@@ -41,6 +41,15 @@ model Access {
   expiresAt DateTime
 
   @@map("clients")
+}
+
+model SensorData {
+  id          Int      @id @default(autoincrement())
+  moisture    Int
+  temperature Float
+  distance    Float
+  motion      Boolean  @default(false) // New field
+  createdAt   DateTime @default(now())
 }
 
 enum Status {
