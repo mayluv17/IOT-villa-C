@@ -1,20 +1,14 @@
-import machine
-import utime
-import machine
-import utime
-import network
-import dht
-import urequests as requests
 from machine import ADC, Pin
 from utime import sleep
-
+import network
+import urequests as requests
 
 
 # Configuration
 WIFI_SSID = "OnePlus Nord CE 2 Lite 5G"  # can be modify for the wokwi 
 WIFI_PASS = "1122334400"                 #   can be modified 
 BASE_URL = "https://happyplants-lyart.vercel.app"    # can be modified 
-DEBUG = True                                  # can be modified 
+DEBUG = False                                  # can be modified 
 
 
 def debug_log(message):
