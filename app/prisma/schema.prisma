@@ -55,3 +55,9 @@ model GuestRequest {
   message   String
   createdAt DateTime @default(now())
 }
+
+model LockBox {
+  id     Int     @id @default(1)  
+  status Boolean @default(false)
+}
+
