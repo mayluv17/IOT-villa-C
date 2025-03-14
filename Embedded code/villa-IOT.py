@@ -8,8 +8,16 @@ import urequests as requests
 WIFI_SSID = "OnePlus Nord CE 2 Lite 5G"  # can be modify for the wokwi 
 WIFI_PASS = "1122334400"                 #   can be modified 
 BASE_URL = "https://happyplants-lyart.vercel.app"    # can be modified 
-DEBUG = False                                  # can be modified 
+DEBUG = True                                  
 
+
+# Definin GPIO pins 
+MOISTURE_SENSOR_PIN = 26
+
+# Moisture Calibration Values
+DRY_VALUE = 60000  # Dry sensor value
+WET_VALUE = 2000   # Wet sensor value
+THRESHOLD_PERCENT = 20  # Irrigation threshold
 
 def debug_log(message):
     """Log debug messages if DEBUG is enabled."""
@@ -34,24 +42,25 @@ def connect_wifi():
     return wlan
 
 # Define GPIO pins
-potentiometer_pin = machine.ADC(26)  # Potentiometer connected to GP26
-led_water = machine.Pin(20, machine.Pin.OUT)  # Red LED connected to GP20
-pir_pin = machine.Pin(22, machine.Pin.IN)   # PIR motion sensor output (GP22)
-led_motion = machine.Pin(19, machine.Pin.OUT)  # Green LED for motion detection (GP19)
-led_temperature = machine.Pin(18, machine.Pin.OUT)  # Blue LED for temperature
-dht_sensor = dht.DHT22(machine.Pin(28))  # DHT22 temperature and humidity sensor connected to GP28
-led_pin = machine.Pin(21, machine.Pin.OUT)  # LED connected to GP21
-trig_pin = machine.Pin(5, machine.Pin.OUT)  # Ultrasonic sensor TRIG connected to GP5
-echo_pin = machine.Pin(6, machine.Pin.IN)   # Ultrasonic sensor ECHO connected to GP6
+#led_water = machine.Pin(20, machine.Pin.OUT)  # Red LED connected to GP20
+#pir_pin = machine.Pin(22, machine.Pin.IN)   # PIR motion sensor output (GP22)
+#led_motion = machine.Pin(19, machine.Pin.OUT)  # Green LED for motion detection (GP19)
+#led_temperature = machine.Pin(18, machine.Pin.OUT)  # Blue LED for temperature
+##led_pin = machine.Pin(21, machine.Pin.OUT)  # LED connected to GP21
+#trig_pin = machine.Pin(5, machine.Pin.OUT)  # Ultrasonic sensor TRIG connected to GP5
+#echo_pin = machine.Pin(6, machine.Pin.IN)   # Ultrasonic sensor ECHO connected to GP6
 
+def read_moisture():
+    """Read the moisture level from the sensor and convert it to percentage."""
+    raw_value = moisture_sensor.read_u16()
+    if raw_value > DRY_VALUE:
+        raw_value = DRY_VALUE
+    elif raw_value < WET_VALUE:
+        raw_value = WET_VALUE
 
-
-
-# Function to read potentiometer value and calculate moisture level
-def read_moisture_level():
-    pot_value = potentiometer_pin.read_u16()  # Read potentiometer value (0-65535)
-    moisture_level = pot_value * 100 // 65535  # Convert to percentage (0-100%)
-    return moisture_level
+    # Convert raw value to percentage
+    moisture_percent = 100 - ((raw_value - WET_VALUE) / (DRY_VALUE - WET_VALUE) * 100)
+    return moisture_percent
 
 # Function to read temperature
 def read_temperature():
@@ -73,6 +82,20 @@ def measure_distance():
     distance_cm = (pulse_duration * 0.0343) / 2
     
     return distance_cm
+
+def send_data(moisture_before, moisture_after, is_irrigated):
+    """Send data to the API."""
+    try:
+        query_params = f"?moistureBefore={moisture_before}&moistureAfter={moisture_after}&isIrrigated={is_irrigated}"
+        request_url = f"{BASE_URL}/api/moisture{query_params}"
+        debug_log(f"Sending data to: {request_url}")
+        
+        response = requests.get(request_url)
+        debug_log(f"Response Status Code: {response.status_code}")
+        debug_log(f"Response Content: {response.content}")
+    except Exception as e:
+        debug_log(f"Error sending data: {e}")
+
 
 # Main loop
 while True:
