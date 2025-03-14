@@ -13,11 +13,21 @@ DEBUG = True
 
 # Definin GPIO pins 
 MOISTURE_SENSOR_PIN = 26
+MOTION_SENSOR_PIN = 22
+TEMPERATURE_SENSOR_PIN = 28
+TRIG_PIN = 5
+ECHO_PIN = 6
 
 # Moisture Calibration Values
 DRY_VALUE = 60000  # Dry sensor value
 WET_VALUE = 2000   # Wet sensor value
 THRESHOLD_PERCENT = 20  # Irrigation threshold
+
+# Initialize Components
+moisture_sensor = ADC(Pin(MOISTURE_SENSOR_PIN))
+motion_sensor = ADC(Pin(MOTION_SENSOR_PIN))
+temperature_sensor = ADC(Pin(TEMPERATURE_SENSOR_PIN))
+motion_sensor = ADC(Pin(TRIG_PIN,ECHO_PIN))
 
 def debug_log(message):
     """Log debug messages if DEBUG is enabled."""
