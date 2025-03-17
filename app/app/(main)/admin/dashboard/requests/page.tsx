@@ -4,7 +4,10 @@ import { DataTable } from './data-table';
 import { columns } from './columns';
 import { useState, useEffect } from 'react';
 
-type Request = {
+import { useQuery } from '@tanstack/react-query';
+import { getRequests } from '@/lib/services/request.service';
+
+type RequestType = {
   id: string;
   email: string;
   villa: string;
@@ -14,37 +17,16 @@ type Request = {
   createdAt: string;
 };
 
-async function getData(): Promise<Request[]> {
-  // Fetch data from your API here
-  return [
-    {
-      id: '1',
-      email: 'user@example.com',
-      villa: 'Villa A1',
-      status: 'pending',
-      category: 'room',
-      message: 'AC not working properly',
-      createdAt: '2024-03-20',
-    },
-    // Add more mock data...
-  ];
-}
-
 export default function RequestsPage() {
-  const [data, setData] = useState<Request[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await getData();
-      setData(result);
-    };
-    fetchData();
-  }, []);
+  const { data: requestsData = [] } = useQuery<RequestType[]>({
+    queryKey: ['requests'],
+    queryFn: () => getRequests(),
+  });
 
   return (
     <div className="container mx-auto p-10">
       <h2 className="text-2xl font-bold tracking-tight mb-4">Requests</h2>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={requestsData} />
     </div>
   );
 }

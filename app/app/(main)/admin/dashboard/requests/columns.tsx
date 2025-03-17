@@ -4,13 +4,7 @@ import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
+import { format } from 'date-fns';
 
 export type Request = {
   id: string;
@@ -31,7 +26,7 @@ export type Request = {
   createdAt: string;
 };
 
-const statusColors = {
+const statusColors: Record<Request['status'], string> = {
   pending: 'bg-yellow-100 text-yellow-800',
   resolved: 'bg-green-100 text-green-800',
   'in-progress': 'bg-blue-100 text-blue-800',
@@ -51,9 +46,7 @@ function RequestDetails({ request }: { request: Request }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => setOpen(true)}>
-            View details
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setOpen(true)}>View details</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Mark as resolved</DropdownMenuItem>
           <DropdownMenuItem>Mark as in-progress</DropdownMenuItem>
@@ -64,16 +57,14 @@ function RequestDetails({ request }: { request: Request }) {
         <DialogContent className="sm:max-w-[425px] rounded-lg">
           <DialogHeader>
             <DialogTitle>Request Details</DialogTitle>
-            <DialogDescription>
-              Full information about this request
-            </DialogDescription>
+            <DialogDescription>Full information about this request</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <span className="font-medium">Status:</span>
               <div className="col-span-3">
-                <Badge className={statusColors[request.status]}>
-                  {request.status.replace('-', ' ')}
+                <Badge className={statusColors[request?.status || 'pending']}>
+                  {(request?.status || 'pending').replace('-', ' ')}
                 </Badge>
               </div>
             </div>
@@ -116,20 +107,14 @@ export const columns: ColumnDef<Request>[] = [
   {
     accessorKey: 'category',
     header: 'Category',
-    cell: ({ row }) => (
-      <span className="capitalize">{row.getValue('category')}</span>
-    ),
+    cell: ({ row }) => <span className="capitalize">{row.getValue('category')}</span>,
   },
   {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
       const status = row.getValue('status') as keyof typeof statusColors;
-      return (
-        <Badge className={statusColors[status]}>
-          {status.replace('-', ' ')}
-        </Badge>
-      );
+      return <Badge className={statusColors[status]}>{status?.replace('-', ' ')}</Badge>;
     },
   },
   {
@@ -143,6 +128,17 @@ export const columns: ColumnDef<Request>[] = [
   {
     accessorKey: 'createdAt',
     header: 'Created At',
+    cell: ({ row }) => {
+      const dateValue = row.getValue('createdAt');
+      if (!dateValue) return null;
+
+      try {
+        const date = new Date(dateValue as string);
+        return <span>{format(date, 'PPp')}</span>;
+      } catch (error) {
+        return <span>{dateValue as string}</span>;
+      }
+    },
   },
   {
     id: 'actions',

@@ -4,16 +4,22 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { customerSignIn } from '@/lib/services/customer.service';
 
 const formSchema = z.object({
   pinCode: z.string().min(6, {
     message: 'Pin code must be 6 characters.',
   }),
 });
+
+type SignInData = {
+  pinCode: string;
+};
 
 export default function SignIn() {
   const { toast } = useToast();
@@ -25,25 +31,35 @@ export default function SignIn() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // TODO: Validate pin code
-    toast({
-      title: 'Checking access...',
-    });
-  }
+  const signInMutation = useMutation({
+    mutationFn: (data: SignInData) => customerSignIn(data),
+    onSuccess: () => {
+      toast({
+        title: 'Successfully signed in',
+        variant: 'default',
+      });
+      window.location.reload();
+    },
+    onError: () => {
+      toast({
+        title: 'Failed to sign in',
+        description: 'Please check your pin code and try again',
+        variant: 'destructive',
+      });
+    },
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <h6 className="text-2xl font-bold text-center mb-10">Login</h6>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit((value: SignInData) => signInMutation.mutate(value))} className="space-y-6">
             <FormField
               control={form.control}
               name="pinCode"
               render={({ field }) => (
                 <FormItem>
-                  {/* <FormLabel>Pin Code</FormLabel> */}
                   <FormControl>
                     <Input
                       type="text"

@@ -62,6 +62,9 @@ model GuestRequest {
   id        Int      @id @default(autoincrement())
   category  String
   message   String
+  villa     String   @default("1")
+  email     String   @default("test@email.coom")
+  status    String   @default("pending")
   createdAt DateTime @default(now())
 }
 

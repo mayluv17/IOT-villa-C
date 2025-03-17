@@ -3,7 +3,7 @@
 import { Card, CardTitle, CardDescription, CardHeader, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { CarFront, Lock, LockOpen, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,19 +12,40 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import SignIn from './signin';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { getBoxState, customerRequest, toggleBox } from '@/lib/services/customer.service';
+import { useQueryClient } from '@tanstack/react-query';
+
+type requestFormType = { category: string; message: string; email?: string; villa?: string };
+
+type BoxState = {
+  status: boolean;
+};
 
 export default function Home() {
-  const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
-  const router = useRouter();
-  const params = useParams();
+  const [isBoxOpen, setIsBoxOpen] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const toggleBox = () => {
-    setIsOpen((prev) => !prev);
-  };
+  const { toast } = useToast();
+  const params = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+
+  const { data: boxState } = useQuery<BoxState>({
+    queryKey: ['boxState'],
+    queryFn: () => getBoxState(),
+  });
+
+  useEffect(() => {
+    const sessionCookie = document.cookie.split('; ').find((row) => row.startsWith('session='));
+    if (sessionCookie) {
+      setIsLoggedIn(true);
+    }
+    if (boxState?.status !== undefined) {
+      setIsBoxOpen(boxState.status);
+    }
+  }, [boxState]);
 
   const formSchema = z.object({
     category: z.enum(['room', 'gym', 'supplies', 'sauna']),
@@ -41,12 +62,48 @@ export default function Home() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast({ variant: 'default', title: 'Enquiry Submitted' });
-    form.reset();
-  }
+  const requestMutation = useMutation({
+    mutationFn: (data: requestFormType) => {
+      const sessionCookie = document.cookie.split('; ').find((row) => row.startsWith('session='));
+      const email = sessionCookie?.split('=')[1] || '';
+      const decodedEmail = decodeURIComponent(email);
 
-  const isLoggedIn = false;
+      if (!email) {
+        throw new Error('Not logged in');
+      }
+
+      return customerRequest({
+        ...data,
+        villa: params.id,
+        email: decodedEmail,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Request submitted successfully',
+        variant: 'default',
+      });
+      form.reset();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Failed to submit request',
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const toggleBoxMutation = useMutation({
+    mutationFn: toggleBox,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['boxState'] });
+    },
+  });
+
+  const handleToggleBox = () => {
+    toggleBoxMutation.mutate({ status: !isBoxOpen });
+  };
 
   if (!isLoggedIn) {
     return <SignIn />;
@@ -63,11 +120,11 @@ export default function Home() {
             <button
               className={cn(
                 'flex gap-2 border-2 rounded p-2 w-60 justify-center items-center',
-                !isOpen ? 'border-green-400' : 'border-red-400'
+                !isBoxOpen ? 'border-green-400' : 'border-red-400'
               )}
-              onClick={toggleBox}>
-              {isOpen ? <Lock className="text-red-400" /> : <LockOpen className="text-green-400" />}
-              {isOpen ? 'Close Box' : 'Open Box'}
+              onClick={handleToggleBox}>
+              {isBoxOpen ? <Lock className="text-red-400" /> : <LockOpen className="text-green-400" />}
+              {isBoxOpen ? 'Close Box' : 'Open Box'}
             </button>
           </CardContent>
         </Card>
@@ -82,7 +139,9 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit((value: requestFormType) => requestMutation.mutate(value))}
+                  className="space-y-4">
                   <FormField
                     control={form.control}
                     name="category"

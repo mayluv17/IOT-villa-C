@@ -7,6 +7,7 @@ import AuthProvider from '@/contexts/auth-context';
 import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/toaster';
 import Providers from './providers';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,6 +25,7 @@ const geistMono = Geist_Mono({
 // };
 
 const excluded = ['/login', '/register'];
+const queryClient = new QueryClient();
 
 export default function RootLayout({
   children,
@@ -39,7 +41,9 @@ export default function RootLayout({
           {excluded.includes(pathName) ? (
             children
           ) : (
-            <AuthProvider>{children}</AuthProvider>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>{children}</AuthProvider>
+            </QueryClientProvider>
           )}
         </Providers>
         <Toaster />

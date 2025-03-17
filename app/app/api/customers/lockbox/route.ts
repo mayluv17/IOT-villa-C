@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import  prisma  from "@/lib/db"; 
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/db';
 // GET request - Retrieve lock-box status
 export async function GET() {
   try {
     const lockBox = await prisma.lockBox.findFirst();
     return NextResponse.json({ status: lockBox?.status ?? false }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch lock-box status" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch lock-box status' }, { status: 500 });
   }
 }
 
@@ -21,6 +21,6 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ status: updatedLockBox.status }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update lock-box status" }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update lock-box status' }, { status: 500 });
   }
 }
