@@ -13,21 +13,21 @@ DEBUG = True
 
 # Definin GPIO pins 
 MOISTURE_SENSOR_PIN = 26
-MOTION_SENSOR_PIN = 22
-TEMPERATURE_SENSOR_PIN = 28
+PIR_PIN = 22
+DHT_PIN = 28
 TRIG_PIN = 5
 ECHO_PIN = 6
 
 # Moisture Calibration Values
 DRY_VALUE = 60000  # Dry sensor value
 WET_VALUE = 2000   # Wet sensor value
-THRESHOLD_PERCENT = 20  # Irrigation threshold
+THRESHOLD_PERCENT = 5  # Irrigation threshold
 
 # Initialize Components
 moisture_sensor = ADC(Pin(MOISTURE_SENSOR_PIN))
-motion_sensor = ADC(Pin(MOTION_SENSOR_PIN))
-temperature_sensor = ADC(Pin(TEMPERATURE_SENSOR_PIN))
-motion_sensor = ADC(Pin(TRIG_PIN,ECHO_PIN))
+pir_sensor = ADC(Pin(PIR_PIN))
+dht_sensor = ADC(Pin(DHT_PIN))
+distance_sensor = ADC(Pin(TRIG_PIN,ECHO_PIN))
 
 def debug_log(message):
     """Log debug messages if DEBUG is enabled."""
@@ -51,15 +51,6 @@ def connect_wifi():
     debug_log(f"Network Config: {wlan.ifconfig()}")
     return wlan
 
-# Define GPIO pins
-#led_water = machine.Pin(20, machine.Pin.OUT)  # Red LED connected to GP20
-#pir_pin = machine.Pin(22, machine.Pin.IN)   # PIR motion sensor output (GP22)
-#led_motion = machine.Pin(19, machine.Pin.OUT)  # Green LED for motion detection (GP19)
-#led_temperature = machine.Pin(18, machine.Pin.OUT)  # Blue LED for temperature
-##led_pin = machine.Pin(21, machine.Pin.OUT)  # LED connected to GP21
-#trig_pin = machine.Pin(5, machine.Pin.OUT)  # Ultrasonic sensor TRIG connected to GP5
-#echo_pin = machine.Pin(6, machine.Pin.IN)   # Ultrasonic sensor ECHO connected to GP6
-
 def read_moisture():
     """Read the moisture level from the sensor and convert it to percentage."""
     raw_value = moisture_sensor.read_u16()
@@ -80,11 +71,11 @@ def read_temperature():
 
 def measure_distance():
     # Trigger pulse
-    trig_pin.low()
+    TRIG_PIN.low()
     utime.sleep_us(2)
-    trig_pin.high()
+    TRIG_PIN.high()
     utime.sleep_us(5)
-    trig_pin.low()
+    TRIG_PIN.low()
 # Measure echo pulse duration
     pulse_duration = machine.time_pulse_us(echo_pin, 1, 1000000)  # Timeout of 1 second (1,000,000 microseconds)
     
@@ -93,10 +84,10 @@ def measure_distance():
     
     return distance_cm
 
-def send_data(moisture_before, moisture_after, is_irrigated):
+def send_data(moisture_before, wood_level, lake_temperature):
     """Send data to the API."""
     try:
-        query_params = f"?moistureBefore={moisture_before}&moistureAfter={moisture_after}&isIrrigated={is_irrigated}"
+        query_params = f"?moistureBefore={moisture_before}&woodlevel={wood_level}&laketemperature={lake_temperature}"
         request_url = f"{BASE_URL}/api/moisture{query_params}"
         debug_log(f"Sending data to: {request_url}")
         
@@ -107,15 +98,29 @@ def send_data(moisture_before, moisture_after, is_irrigated):
         debug_log(f"Error sending data: {e}")
 
 
-# Main loop
-while True:
-    moisture = read_moisture_level()
-    print(f"Moisture level: {moisture}%")
 
-    if moisture > 5:
-        led_water.on()  # Turn on LED if moisture level is above 5%
+def monitor_sensor():
+    connect_wifi()
+# Main loop
+    while True:
+        moisture_before = read_moisture()
+        wood_level = measure_distance()
+        lake_temperature = read_moisture()
+        debug_log(f"Moisture Level Before leakage: {moisture_before:.2f}%")
+
+    #if the moisture is below threshold, do nothing 
+        if moisture_before > THRESHOLD_PERCENT:
+            print("PIPE LEAKAGE DETECTED")
+    
+        else:
+            #send current moiture reading when threshod not atain
+            send_data(moisture_before, wood_level, lake_temperature)
+
+        
+    
+
+
     else:
-        led_water.off()  # Turn off LED if moisture level is below or equal to 5%
 
     if pir_pin.value() == 1:
         led_motion.on()  # Turn on LED if motion is detected
