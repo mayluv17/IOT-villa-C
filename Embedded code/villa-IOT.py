@@ -71,6 +71,12 @@ def read_temperature():
     temperature = dht_sensor.temperature()  # Read temperature
     return temperature
 
+def check_frozen_lake():
+    #check if the temperature is -15°C for 4 consecutive days
+    #if we at to collect 3 temperature readings every day then in 4 days will corresponf to 12 temperature readings 
+    if len(temperature_log) >= 12 and all(temp == -15 temp in temperatue_log[-12:]):
+        print("❄️ FROZEN LAKE ❄️") 
+
 def measure_distance():
     # Trigger pulse
     TRIG_PIN.low()
@@ -124,38 +130,25 @@ def monitor_sensor():
             send_data(moisture_before, wood_level, lake_temperature)
             print("Person detected.")
 
-    #reading laake temperature
+    #reading lake temperature
         temperature = read_temperature()
         if temperature is not None:
            send_data(moisture_before, wood_level, lake_temperature)
            print(f"Temperature: {temperature}°C")
-           if temperature < -15:
-                print("") 
+           #store temperature reading
+           temperature_log.append(temperature)
 
+           #check if lake is frozen 
+           check_frozen_lake()
 
-        
-    else:
-
-    if pir_pin.value() == 1:
-        led_motion.on()  # Turn on LED if motion is detected
-        print("Motion detected")
-    else:
-        led_motion.off()  # Turn off led if no motion detected
-        print("No motion")
-
-    temperature = read_temperature()
-    if temperature is not None:
-        print(f"Temperature: {temperature}°C")
-        if temperature < -15:
-            led_temperature.on()
+        utime.sleep(86400) # wait for 1 day (86400 seconds) can be modified because taking temp reading once a day is not optimal   
+               
+        distance = measure_distance()
+        print(f"Distance: {distance} cm")
+        if distance > 100:
+            send_data(moisture_before, wood_level, lake_temperature)
+            print("Wood level low!!!")
         else:
-            led_temperature.off()
-
-    distance = measure_distance()
-    print(f"Distance: {distance} cm")
-    if distance > 100:
-        led_pin.on()
-    else:
-        led_pin.off()
+            send_data(moisture_before, wood_level, lake_temperature)
 
     utime.sleep(0.5)  # Adjust sleep time as needed
