@@ -17,6 +17,8 @@ PIR_PIN = 22
 DHT_PIN = 28
 TRIG_PIN = 5
 ECHO_PIN = 6
+temperature_log = []
+
 
 # Moisture Calibration Values
 DRY_VALUE = 60000  # Dry sensor value
@@ -110,16 +112,28 @@ def monitor_sensor():
 
     #if the moisture is below threshold, do nothing 
         if moisture_before > THRESHOLD_PERCENT:
-            print("PIPE LEAKAGE DETECTED")
+            send_data(moisture_before, wood_level, lake_temperature)
+            print("PIPE LEAKAGE DETECTED.")
     
         else:
             #send current moiture reading when threshod not atain
             send_data(moisture_before, wood_level, lake_temperature)
+    
+    #motion detector 
+        if PIR_PIN.value() == 1:
+            send_data(moisture_before, wood_level, lake_temperature)
+            print("Person detected.")
+
+    #reading laake temperature
+        temperature = read_temperature()
+        if temperature is not None:
+           send_data(moisture_before, wood_level, lake_temperature)
+           print(f"Temperature: {temperature}°C")
+           if temperature < -15:
+                print("") 
+
 
         
-    
-
-
     else:
 
     if pir_pin.value() == 1:
