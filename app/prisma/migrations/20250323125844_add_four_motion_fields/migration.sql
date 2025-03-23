@@ -1,0 +1,7 @@
+
+ALTER TABLE "GuestRequest" ALTER COLUMN "status" SET DEFAULT 'pending';
+ALTER TABLE "SensorData" DROP COLUMN "motion",
+ADD COLUMN     "motion1" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "motion2" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "motion3" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "motion4" BOOLEAN NOT NULL DEFAULT false;

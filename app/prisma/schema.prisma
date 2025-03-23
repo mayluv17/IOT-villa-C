@@ -48,7 +48,12 @@ model SensorData {
   moisture    Int
   temperature Float
   distance    Float
-  motion      Boolean  @default(false) // New field
+  // Instead of one "motion", define four motion fields:
+  motion1     Boolean  @default(false)
+  motion2     Boolean  @default(false)
+  motion3     Boolean  @default(false)
+  motion4     Boolean  @default(false)
+
   createdAt   DateTime @default(now())
 }
 

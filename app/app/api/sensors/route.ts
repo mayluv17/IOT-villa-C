@@ -1,19 +1,27 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
-
 export async function POST(request: Request) {
   try {
-    // Parse the JSON from the request body
-    const { moisture, temperature, distance, motion } = await request.json();
-
-    // Create a new sensor reading in the database
+    const {
+      moisture,
+      temperature,
+      distance,
+      motion1,
+      motion2,
+      motion3,
+      motion4
+    } = await request.json();
+    
     const sensorReading = await prisma.sensorData.create({
       data: {
         moisture,
         temperature,
         distance,
-        motion, // new field
+        motion1,
+        motion2,
+        motion3,
+        motion4,
       },
     });
 
