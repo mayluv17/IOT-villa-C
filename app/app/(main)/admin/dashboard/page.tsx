@@ -1,4 +1,4 @@
-import { ShadBarChart } from '@/components/bar-chart';
+import { NegativeBarChar } from '@/components/bar-chart';
 import Occupancy from '@/components/occupancy';
 import { RadialChart } from '@/components/radial-chart';
 import { WaterLeakage } from '@/components/waterLeakage';
@@ -13,7 +13,7 @@ export default function Dashboard() {
         <RadialChart />
       </div>
       <div className="max-w-screen-sm">
-        <ShadBarChart />
+        <NegativeBarChar />
       </div>
       <div className="max-w-screen-sm">
         <Occupancy />
