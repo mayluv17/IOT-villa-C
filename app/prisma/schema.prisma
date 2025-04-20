@@ -48,7 +48,6 @@ model SensorData {
   moisture    Int
   temperature Float
   distance    Float
-  // Instead of one "motion", define four motion fields:
   motion1     Boolean  @default(false)
   motion2     Boolean  @default(false)
   motion3     Boolean  @default(false)
@@ -77,4 +76,3 @@ model LockBox {
   id     Int     @id @default(1)  
   status Boolean @default(false)
 }
-

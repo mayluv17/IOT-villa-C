@@ -3,28 +3,8 @@
 import { TrendingUp } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Cell, LabelList } from 'recharts';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-const chartData = [
-  { day: '04-12', temp: 186 },
-  { day: '05-12', temp: 205 },
-  { day: '06-12', temp: -207 },
-  { day: '07-12', temp: 173 },
-  { day: '08-12', temp: -209 },
-  { day: '09-12', temp: 214 },
-];
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 const chartConfig = {
   temp: {
@@ -32,31 +12,34 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function NegativeBarChar() {
+type chartType = {
+  date: string;
+  temperature: string;
+};
+
+type ChartProps = {
+  chartData: chartType[];
+};
+
+export function NegativeBarChar({ chartData }: ChartProps) {
+  console.log(chartData);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Temperature Chart - Negative</CardTitle>
-        <CardDescription>June 2024</CardDescription>
+        <CardTitle>Temperature Chart</CardTitle>
+        <CardDescription>This Month</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel hideIndicator />}
-            />
-            <Bar dataKey="temp">
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel hideIndicator />} />
+            <Bar dataKey="temperature">
               <LabelList position="top" dataKey="month" fillOpacity={1} />
-              {chartData.map((item) => (
+              {chartData?.map((item) => (
                 <Cell
-                  key={item.day}
-                  fill={
-                    item.temp > 0
-                      ? 'hsl(var(--chart-1))'
-                      : 'hsl(var(--chart-2))'
-                  }
+                  key={item.date}
+                  fill={Number(item.temperature) > 0 ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-2))'}
                 />
               ))}
             </Bar>
